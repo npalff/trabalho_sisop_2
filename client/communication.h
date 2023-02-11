@@ -6,8 +6,8 @@
 #define CMD 2
 #define BUFFER_SIZE 256
 
-#ifndef COMMUNICATION_MANAGEMENT
-#define COMMUNICATION_MANAGEMENT
+#ifndef COMMUNICATION_CLIENT
+#define COMMUNICATION_CLIENT
 
 typedef struct __packet {
     uint16_t type;          //Tipo do pacote (p.ex. DATA | CMD)
@@ -22,7 +22,7 @@ typedef struct __client_thread_args {
 } client_thread_args;
 
 // metodos comuns a servidor e cliente
-int read_packet(int socketID, packet* pack, char *buffer); // 
+int receive_packet(int socketID, packet* pack, char *buffer); // 
 int send_packet(int socketID, packet* pack);
 
 

@@ -1,0 +1,4 @@
+#ifndef SYNCRONIZATION_CLIENT
+#define SYNCRONIZATION_CLIENT
+
+#endif
