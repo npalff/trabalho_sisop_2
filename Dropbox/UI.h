@@ -21,13 +21,3 @@ int request_command(char *request, char *file);
 void file_name(char *path_name, char *fname);
 time_t last_modified_date(char *path);
 int exist(const char *fname);
-
-
-
-
-
-
-
-
-
-
