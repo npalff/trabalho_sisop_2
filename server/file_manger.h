@@ -1,0 +1,4 @@
+#ifndef FILE_MANAGER_SERVER
+#define FILE_MANAGER_SERVER
+
+#endif

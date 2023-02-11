@@ -1,0 +1,4 @@
+#ifndef COMMUNICATION_SERVER
+#define COMMUNICATION_SERVER
+
+#endif

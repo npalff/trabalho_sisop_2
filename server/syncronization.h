@@ -1,0 +1,4 @@
+#ifndef SYNCRONIZATION_SERVER
+#define SYNCRONIZATION_SERVER
+
+#endif
