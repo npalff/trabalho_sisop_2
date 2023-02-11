@@ -10,10 +10,10 @@ int main(int argc, char* argv[])
 {
     if(argc != 1)
     {
-        printf("")
+        printf("Error: wrong call \n\n To run the server, call: ./server <port number>");
     }
     else
-    {}
+        PORT = atoi(argv[1]);
 
 
 }
