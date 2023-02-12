@@ -1,14 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include "/UI.h"
+
+#include "UI.h"
 
 char command[LINE][COLUMN] = {"upload", "download", "list", "get_sync_dir", "exit"};
 
