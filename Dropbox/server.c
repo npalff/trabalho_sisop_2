@@ -254,7 +254,7 @@ void listen_sync(int client_socket, char *userid)
       switch (clientRequest.command)
       {
         case UPLOAD: receive_file(clientRequest.file, client_socket, userid); break;
-        case DOWNLOADALL: send_all_files(client_socket, userid); break;
+        case DOWNLOAD_ALL: send_all_files(client_socket, userid); break;
         case DELETE: delete_file(clientRequest.file, client_socket, userid);
         case EXIT: ;break;
         default: break;

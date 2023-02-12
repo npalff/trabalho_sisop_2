@@ -14,7 +14,7 @@
 
 #define UPLOAD 0
 #define DOWNLOAD 1
-#define DOWNLOADALL 2
+#define DOWNLOAD_ALL 2
 #define DELETE 3
 #define SHOWFILES 4
 #define SYNC 5

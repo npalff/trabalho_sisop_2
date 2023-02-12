@@ -28,7 +28,9 @@
 #define TRUE 1
 #define FALSE 0
 
-
 void *sync_client_directory(); // void *sync_thread();
+void download_files(); // void get_all_files();
+void upload_file(char *client_file_path, char *file_name, int socket); // void upload_file(char *file, int socket);
+void delete_file(char* file_name, int socket); // void delete_file_request(char* file, int socket);
 
 #endif
