@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     pthread_t client_thread, sync_thread;
 
     // inicializa lista de clientes do servidor
-    newList(clients);
+    create_list(clients);
 
     initialize_client_list();
 
@@ -104,7 +104,7 @@ int initialize_client(int client_socket, char *user_id, struct client *client)
       client->logged = 1;
 
       // insere cliente na lista de client
-      insertList(&clients, *client);
+      insert_list(&clients, *client);
     }
     // encontrou CLIENT na lista, atualiza device
     else
@@ -180,7 +180,7 @@ void initialize_clients()
               if (pthread_mutex_init(&client.file_data[i].file_mutex, NULL) != 0)
               {
                   printf("\n mutex init failed\n");
-                  return 1;
+                  return;
               }
             }
             i = 0;
@@ -204,7 +204,7 @@ void initialize_clients()
                  i++;
               }
             }
-            insertList(&clients, client);
+            insert_list(&clients, client);
           }
        }
     }
@@ -278,7 +278,7 @@ void *client_thread (void *socket)
     printf("ERROR reading from socket\n");
 
   // inicializa estrutura do client
-  if (initializeClient(*client_socket, user_id, &client) > 0)
+  if (initialize_client(*client_socket, user_id, &client) > 0)
   {
       // avisamos cliente que conseguiu conectar
       connected = 1;
@@ -355,7 +355,7 @@ void send_file(char *file, int socket, char *user_id)
 
   if (ptrfile = fopen(path, "rb"))
   {
-      fileSize = getFileSize(ptrfile);
+      fileSize = file_size(ptrfile);
 
     	// escreve estrutura do arquivo no servidor
     	byteCount = write(socket, &fileSize, sizeof(int));
@@ -405,7 +405,7 @@ void receive_file(char *file, int socket, char*user_id)
         file_data.timestamp_last_modified = now;
         file_data.size = fileSize;
 
-      	updateFileInfo(user_id, file_data);
+      	update_file_data(user_id, file_data);
         return;
       }
 
@@ -437,7 +437,7 @@ void receive_file(char *file, int socket, char*user_id)
       file_data.timestamp_last_modified = now;
       file_data.size = fileSize;
 
-      updateFileInfo(user_id, file_data);
+      update_file_data(user_id, file_data);
   }
 
 }
@@ -472,7 +472,7 @@ void send_all_files(int client_socket, char *user_id)
 
       if (ptrfile = fopen(path, "rb"))
       {
-          fileSize = getFileSize(ptrfile);
+          fileSize = file_size(ptrfile);
 
           // escreve estrutura do arquivo no servidor
           byteCount = write(client_socket, &fileSize, sizeof(int));
@@ -564,7 +564,7 @@ void delete_file_all_devices(char *file, int socket, char *user_id)
   strcpy(file_data.name, file);
   file_data.size = -1;
 
-  updateFileInfo(user_id, file_data);
+  update_file_data(user_id, file_data);
   return;
 }
 
