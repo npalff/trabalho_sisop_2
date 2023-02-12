@@ -54,7 +54,7 @@ struct client_request
 
 
 int initialize_client(int client_socket, char *userid, struct client *client);
-void initialize_client_list();
+void initialize_clients();
 void close_client_connection(int socket, char* userid);
 
 void sync_server(int socket, char *userid);

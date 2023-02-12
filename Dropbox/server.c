@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     // inicializa lista de clientes do servidor
     create_list(clients);
 
-    initialize_client_list();
+    initialize_clients();
 
     // abre o socket
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
