@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     //else
         PORT = atoi(argv[1]);
     
-    int server_socket, new_socket, thread;
+    int server_socket, new_socket, thread;sync_server
     socklen_t client_len;
     struct sockaddr_in serv_addr, cli_addr;
     pthread_t c_thread, sync_thread;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
         }
         else
         {
-        if(pthread_create(&sync_thread, NULL, sync_thread_sv, &new_socket))
+        if(pthread_create(&sync_thread, NULL, sync_thread_server, &new_socket))
         {
             printf("ERROR creating sync thread\n");
             return -1;
@@ -241,7 +241,7 @@ void close_client_connection(int socket, char* user_id)
   }
 }
 
-void sync_server(int socket, char *user_id);
+
 void listen_sync(int client_socket, char *user_id)
 {
   int byteCount, command;
@@ -256,7 +256,7 @@ void listen_sync(int client_socket, char *user_id)
         case UPLOAD: receive_file(clientRequest.file, client_socket, user_id); break;
         case DOWNLOAD_ALL: send_all_files(client_socket, user_id); break;
         case DELETE: delete_file_all_devices(clientRequest.file, client_socket, user_id);
-        case EXIT: ;break;
+        case EXIT: close_client_connection(client_socket, user_id);break;
         default: break;
       }
   } while(clientRequest.command != EXIT);
@@ -299,10 +299,11 @@ void *client_thread (void *socket)
     return NULL;
   }
 
-  listen_client(*client_socket, user_id);
+  listen_client(client_socket, user_id);
 }
 
-void *sync_thread_sv(void *socket)
+
+void *sync_thread_server(void *socket)
 {
   int byteCount, connected;
   int *client_socket = (int*)socket;
