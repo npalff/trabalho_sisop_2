@@ -1,11 +1,195 @@
-void *sync_client_directory() {
+#include "client.h"
+#include "UI.h"
+
+// Global variables
+char user_id[MAXNAME]; //userid
+char sync_client_directory[MAXNAME + 50]; // directory
+char *host; //host
+
+int port; //port
+int socket_fd = -1;//sockfd
+int sync_socket = -1;//sync_socket
+int notifier;//notifyfd
+int watch;//watchfd
+
+void main(int argc, char *argv[]) {
+	if (argc < 3) {
+        printf("Insufficient arguments\n");
+        exit(0);
+	}
+
+	// primeiro argumento nome do usuário
+	if (strlen(argv[1]) <= MAXNAME)
+		strcpy(user_id, argv[1]);
+
+	// segundo argumento host
+	host = malloc(sizeof(argv[2]));
+	strcpy(host, argv[2]);
+
+	// terceiro argumento porta
+	port = atoi(argv[3]);
+
+	if (( open_connection_with_server((host, port)) > 0) {
+		sync_client_inicialization();
+		user_interface();
+	}
+}
+
+void user_interface() {
+    char request[200];
+    char file_name[200]; // file
+	int command = 0;
+
+	printf("\nCommands:\nupload <path/filename.ext>\ndownload <filename.ext>\nlist\nget_sync_dir\nexit\n");
+	do {
+		printf("\ntype your command: ");
+		fgets(request, sizeof(request), stdin);
+		command = request_command(request, file_name);
+
+		// verifica requisição do cliente
+		switch (command) {
+            case SYNC:
+                download_files();
+                break;
+            case DOWNLOAD:
+                download_file(file_name);
+                break;
+            case UPLOAD: 
+                upload_file(file_name, file_name,socket_fd);
+                break;
+			case LIST:
+                list_files();
+                break;
+            case EXIT:
+                close_connection_with_server();
+                break;
+
+			default: printf("ERROR: Invalid command\n");
+		}
+	} while(command != EXIT);
+}
+
+int open_connection_with_server(char *host, int port) {
+	int number_bytes; //byteCount
+    int connected; // connected
+	struct sockaddr_in sockaddr_in; //server_addr
+	struct hostent *server;
+	int client_thread = 1;
+	char buffer[256];
+
+	server = gethostbyname(host);
+
+	if(server == NULL) {
+        printf("ERROR: No host\n");
+        return -1;
+    }
+
+	// Try open socket
+	if((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+		printf("ERROR: Open socket\n");
+		return -1;
+	}
+
+	// Initialize sockaddr_in
+	sockaddr_in.sin_family = AF_INET;
+	sockaddr_in.sin_port = htons(port);
+	sockaddr_in.sin_addr = *((struct in_addr *)server->h_addr);
+
+	bzero(&(sockaddr_in.sin_zero), 8);
+
+	// Try connect to socket
+	if(connect(socket_fd,(struct sockaddr *) &sockaddr_in,sizeof(sockaddr_in)) < 0) {
+  		printf("ERROR: Connect to socket\n");
+		return -1;
+	}
+
+	write(socket_fd, &client_thread, sizeof(client_thread));
+
+	// envia userid para o servidor
+	number_bytes = write(socket_fd, user_id, sizeof(user_id));
+	if(number_bytes < 0) {
+		printf("ERROR: Send user id %s to server\n", user_id);
+		return -1;
+	}
+
+	number_bytes = read(socket_fd, &connected, sizeof(int));
+	if(number_bytes < 0) {
+		printf("ERROR: Receive connected message\n");
+		return -1;
+	} else if (connected == 1) {
+		printf("You are connected with server!\n");
+		return 1;
+	} else {
+		printf("You is connected with two devices!\n");
+		return -1;
+	}
+}
+
+void close_connection_with_server() {
+	int number_bytes;
+	
+    struct client_request client_request;
+	client_request.command = EXIT;
+
+	number_bytes = write(socket_fd, &client_request, sizeof(client_request));
+	if (number_bytes < 0)
+		printf("ERROR: Close connection\n");
+
+	number_bytes = write(sync_socket, &client_request, sizeof(client_request));
+	if (number_bytes < 0)
+		printf("ERROR: Close connection\n");
+
+	close(socket_fd);
+	printf("Connection closed!\n");
+}
+
+
+int create_sync_socket() {
+    int number_bytes_writed; // byteCount
+    char buffer[256];
+	int connected;
+    int client_thread = 0;
+
+	struct sockaddr_in sockaddr_in; //server_addr
+	struct hostent *server;
+
+	server = gethostbyname(host);
+	if (server == NULL)
+  	    return -1;
+
+	if ((sync_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		return -1;
+
+	// Initialize server
+	sockaddr_in.sin_family = AF_INET;
+	sockaddr_in.sin_port = htons(port);
+	sockaddr_in.sin_addr = *((struct in_addr *) server->h_addr);
+
+	bzero(&(sockaddr_in.sin_zero), 8);
+
+	// Try connect to socket
+	if (connect(sync_socket,(struct sockaddr *) &sockaddr_in,sizeof(sockaddr_in)) < 0)
+		return -1;
+
+	write(sync_socket, &client_thread, sizeof(client_thread));
+
+	// Send identifier user to server
+	number_bytes_writed = write(sync_socket, user_id, sizeof(user_id));
+}
+
+void create_notifier_sync_client_directory() {
+	notifier = inotify_init();
+	watch = inotify_add_watch(notifier, sync_client_directory, IN_CLOSE_WRITE | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
+}
+
+void *sync_client_directory_thread() {
     char client_file_path[200]; // path
 
     char buffer[BUFFER_LENGTH]; //buffer
     int notify_read_length = 0; //length
     int notify_reading = 0; // i
 
-    //create_sync_sock();
+    create_sync_socket(); //create_sync_sock();
     download_files(); //get_all_files();
 
     while(TRUE) {
@@ -19,7 +203,7 @@ void *sync_client_directory() {
             struct inotify_event *event = (struct inotify_event*) &buffer[notify_reading];
             if(event->len) {
                 // Concatenation client file path
-                strcpy(client_file_path, directory); strcat(client_file_path, "/"); strcat(client_file_path, event->name);
+                strcpy(client_file_path, sync_client_directory); strcat(client_file_path, "/"); strcat(client_file_path, event->name);
 
                 if(event->mask & IN_CLOSE_WRITE || event->mask & IN_CREATE || event->mask & IN_MOVED_TO) {
 					if(exists(path) && (event->name[0] != '.'))
@@ -36,6 +220,34 @@ void *sync_client_directory() {
         notify_reading = 0;
         sleep(10);
     }
+}
+
+void sync_client_inicialization()
+{
+    pthread_t thread; // syn_th
+
+    char file_name[MAXNAME + 10] = "sync_dir_"; // fileName
+	char *home_directory; // homedir
+
+	if ((homedir = getenv("HOME")) == NULL)
+        home_directory = getpwuid(getuid())->pw_dir;
+	
+    // File name
+	strcat(file_name, user_id);
+	// Syncronization client directory path
+	strcpy(sync_client_directory, homedir); strcat(sync_client_directory, "/"); strcat(sync_client_directory, file_name);
+
+	if (mkdir(sync_client_directory, 0777) < 0)
+		if (errno != EEXIST)
+			printf("ERROR: Create %s directory\n", sync_client_directory);
+	else
+		printf("SUCCESS INICIALIZATION: Creating %s directory in your home\n", file_name);
+
+	create_notifier_sync_client_directory();
+
+	// Syncronization thread client directory 
+	if(pthread_create(&thread, NULL, sync_client_directory_thread, NULL))
+		printf("ERROR: Create syncronization thread client directory\n");
 }
 
 void download_files() {
@@ -65,7 +277,7 @@ void download_files() {
             // Read file name from server
             number_bytes_read = read(sync_socket, file_name, sizeof(file_name));
             if (number_bytes_read >= 0) {
-                strcpy(sync_dir_path_client, directory); strcat(sync_dir_path_client, "/"); strcat(sync_dir_path_client, file_name);
+                strcpy(sync_dir_path_client, sync_client_directory); strcat(sync_dir_path_client, "/"); strcat(sync_dir_path_client, file_name);
 
                 // Create file in client directory
                 file = fopen(sync_dir_path_client, "wb");
@@ -96,6 +308,88 @@ void download_files() {
         } 
     } else
         printf("ERROR: Download all files\n");
+}
+
+void list_files() {
+	int number_bytes; // byteCount
+    int number_files_server; // fileNum
+    int file_index; // i
+	struct client_request client_request; // clientRequest
+	struct file_info file_info; // file_info
+
+	client_request.command = LIST;
+
+	// avisa servidor que será feito um download
+	number_bytes = write(socket_fd, &client_request, sizeof(client_request));
+	if(number_bytes < 0)
+		printf("Error sending LIST message to server\n");
+
+	// lê número de arquivos existentes no diretório
+	number_bytes = read(socket_fd, &number_files_server, sizeof(number_files_server));
+	if (number_bytes < 0)
+		printf("Error receiving filesize\n");
+
+	if(number_files_server == 0) {
+		printf("Empty directory\n\n\n");
+		return;
+	}
+
+	for(file_index = 0; file_index < number_files_server; file_index++) {
+		number_bytes = read(socket_fd, &file_info, sizeof(file_info));
+
+		printf("\nFile %d: %s \nDate: %ssize: %d\n", file_index, file_info.name, file_info.last_modified, file_info.size);
+	}
+}
+
+void download_file(char *file_name) {
+	int number_bytes; //byteCount
+    int number_missing_bytes_read; //bytesLeft
+    int file_size;//fileSize
+    
+	struct client_request client_request; //clientRequest
+	FILE* file;//ptrfile
+	char buffer[KBYTE];//dataBuffer
+
+	// copia nome do arquivo e comando para enviar para o servidor
+	strcpy(client_request.file, file_name);
+	client_request.command = DOWNLOAD;
+
+	// avisa servidor que será feito um download
+	number_bytes = write(sockfd, &client_request, sizeof(client_request));
+	if (number_bytes < 0)
+		printf("ERROR: Download message to server\n");
+
+	// lê estrutura do arquivo que será lido do servidor
+	number_bytes = read(sockfd, &file_size, sizeof(file_size));
+	if (number_bytes < 0)
+		printf("ERROR: Receiving file_size\n");
+
+	if (file_size < 0) {
+		printf("File do not exist\n\n\n");
+		return;
+	}
+	// cria arquivo no diretório do cliente
+	file = fopen(file_name, "wb");
+
+	// número de bytes que faltam ser lidos
+	number_missing_bytes_read = file_size;
+
+	while(number_missing_bytes_read > 0) {
+		// lê 1kbyte de dados do arquivo do servidor
+		number_bytes = read(sockfd, dataBuffer, KBYTE);
+
+		// escreve no arquivo do cliente os bytes lidos do servidor
+		if(number_missing_bytes_read > KBYTE) {
+			number_bytes = fwrite(dataBuffer, KBYTE, 1, file_name);
+		} else {
+			fwrite(dataBuffer, number_missing_bytes_read, 1, file_name);
+		}
+		// decrementa os bytes lidos
+		number_missing_bytes_read -= KBYTE;
+	}
+
+	fclose(file_name);
+	printf("File %s has been downloaded\n\n", file_name);
 }
 
 void upload_file(char *client_file_path, char *file_name, int socket) {
