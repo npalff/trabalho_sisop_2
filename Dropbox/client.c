@@ -208,13 +208,13 @@ void *sync_client_directory_thread() {
                 strcpy(client_file_path, sync_client_directory); strcat(client_file_path, "/"); strcat(client_file_path, event->name);
 
                 if(event->mask & IN_CLOSE_WRITE || event->mask & IN_CREATE || event->mask & IN_MOVED_TO) {
-					if(exists(client_file_path) && (event->name[0] != '.'))
-					    upload_file(client_file_path, file_name, sync_socket);
+					if(exist(client_file_path) && (event->name[0] != '.'))
+					    upload_file(client_file_path, event->name, sync_socket);
                 }
 
                 if (event->mask & IN_DELETE || event->mask & IN_MOVED_FROM){
 					if(event->name[0] != '.')
-					    delete_file(file_name, sync_socket);
+					    delete_file(event->name, sync_socket);
 				}
             }
             notify_reading += EVENT_SIZE + event->len;
@@ -382,9 +382,9 @@ void download_file(char *file_name) {
 
 		// escreve no arquivo do cliente os bytes lidos do servidor
 		if(number_missing_bytes_read > KBYTE) {
-			number_bytes = fwrite(buffer, KBYTE, 1, file_name);
+			number_bytes = fwrite(buffer, KBYTE, 1, file);
 		} else {
-			fwrite(buffer, number_missing_bytes_read, 1, file_name);
+			fwrite(buffer, number_missing_bytes_read, 1, file);
 		}
 		// decrementa os bytes lidos
 		number_missing_bytes_read -= KBYTE;
