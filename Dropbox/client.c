@@ -29,10 +29,12 @@ void main(int argc, char *argv[]) {
 	// terceiro argumento porta
 	port = atoi(argv[3]);
 
-	if (( open_connection_with_server((host, port)) > 0) {
+	if ( open_connection_with_server((host, port)) > 0) {
 		sync_client_inicialization();
 		user_interface();
 	}
+
+	return;
 }
 
 void user_interface() {
