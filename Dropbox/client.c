@@ -122,7 +122,7 @@ int open_connection_with_server(char *host, int port) {
 		printf("You are connected with server!\n");
 		return 1;
 	} else {
-		printf("You is connected with two devices!\n");
+		printf("You are connected with two devices!\n");
 		return -1;
 	}
 }

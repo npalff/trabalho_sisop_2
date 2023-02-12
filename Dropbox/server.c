@@ -9,13 +9,13 @@ int writing = 0;
 
 int main(int argc, char* argv[])
 {
-    if(argc != 1)
-    {
-        printf("Error: wrong call \n\n To run the server, call: ./server <port number>");
-    }
-    else
+    //if(argc > 2)
+    //{
+    //    printf("Error: wrong call \n\n To run the server, call: ./server <port number>");
+    //}
+    //else
         PORT = atoi(argv[1]);
-
+    
     int server_socket, new_socket, thread;
     socklen_t client_len;
     struct sockaddr_in serv_addr, cli_addr;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
         printf("ERROR on bindining\n");
         return -1;
         }
-
+    printf("\nSuccess! Waiting for connections\n\n");
     // espera pela tentativa de conexão de algum cliente
     listen(server_socket, 5);
 
