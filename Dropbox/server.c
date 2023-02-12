@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   pthread_t clientThread, syncThread;
 
   // inicializa lista
-  newList(client_list);
+  create_list(client_list);
 
   initialize_clients();
 
@@ -515,7 +515,7 @@ void initialize_clients()
               if (pthread_mutex_init(&client.file_data[i].file_mutex, NULL) != 0)
               {
                   printf("\n mutex init failed\n");
-                  return 1;
+                  return;
               }
             }
             i = 0;
