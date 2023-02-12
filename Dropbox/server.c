@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     //else
         PORT = atoi(argv[1]);
     
-    int server_socket, new_socket, thread;sync_server
+    int server_socket, new_socket, thread;
     socklen_t client_len;
     struct sockaddr_in serv_addr, cli_addr;
     pthread_t c_thread, sync_thread;
