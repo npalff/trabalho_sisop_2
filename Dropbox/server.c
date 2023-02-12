@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     // inicializa lista de clientes do servidor
     newList(clients);
 
-    initializeClientList();
+    initialize_client_list();
 
     // abre o socket
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -82,20 +82,20 @@ int main(int argc, char* argv[])
 
 }
 
-int initialize_client(int client_socket, char *userid, struct client *client)
+int initialize_client(int client_socket, char *user_id, struct client *client)
 {
     struct client_list* client_node;
     struct stat sb;
     int i;
     char* directory_name;
-    directory_name = strcat("sync_dir_",userid);
+    directory_name = strcat("sync_dir_",user_id);
 
     // não encontrou na lista ---- NEW CLIENT
-    if (!findNode(userid, clients, &client_node))
+    if (!find_node_list(user_id, clients, &client_node))
     {
       client->devices[0] = client_socket;
       client->devices[1] = -1;
-      strcpy(client->userid, userid);
+      strcpy(client->user_id, user_id);
 
       for(i = 0; i < MAXFILES; i++)
       {
@@ -165,7 +165,7 @@ void initialize_clients()
           client.devices[1] = FREEDEV;
           client.logged = 0;
 
-          strcpy(client.userid, dir->d_name);
+          strcpy(client.user_id, dir->d_name);
 
           userDir = opendir(dir->d_name);
 
@@ -215,14 +215,14 @@ void initialize_clients()
 
 
 
-void close_client_connection(int socket, char* userid)
+void close_client_connection(int socket, char* user_id)
 {
     struct client_list *client_node;
 	int i, fileNum = 0;
 
-  printf("Disconnecting %s\n", userid);
+  printf("Disconnecting %s\n", user_id);
 
-	if (findNode(userid, clients, &client_node))
+	if (find_node_list(user_id, clients, &client_node))
 	{
     if(client_node->client.devices[0] == FREEDEV)
     {
@@ -241,8 +241,8 @@ void close_client_connection(int socket, char* userid)
   }
 }
 
-void sync_server(int socket, char *userid);
-void listen_sync(int client_socket, char *userid)
+void sync_server(int socket, char *user_id);
+void listen_sync(int client_socket, char *user_id)
 {
   int byteCount, command;
   struct client_request clientRequest;
@@ -253,9 +253,9 @@ void listen_sync(int client_socket, char *userid)
 
       switch (clientRequest.command)
       {
-        case UPLOAD: receive_file(clientRequest.file, client_socket, userid); break;
-        case DOWNLOAD_ALL: send_all_files(client_socket, userid); break;
-        case DELETE: delete_file_all_devices(clientRequest.file, client_socket, userid);
+        case UPLOAD: receive_file(clientRequest.file, client_socket, user_id); break;
+        case DOWNLOAD_ALL: send_all_files(client_socket, user_id); break;
+        case DELETE: delete_file_all_devices(clientRequest.file, client_socket, user_id);
         case EXIT: ;break;
         default: break;
       }
@@ -267,18 +267,18 @@ void *client_thread (void *socket)
 {
   int byteCount, connected;
   int *client_socket = (int*)socket;
-  char userid[MAXNAME];
+  char user_id[MAXNAME];
   struct client client;
 
   // lê os dados de um cliente
-  byteCount = read(*client_socket, userid, MAXNAME);
+  byteCount = read(*client_socket, user_id, MAXNAME);
 
   // erro de leitura
   if (byteCount < 1)
     printf("ERROR reading from socket\n");
 
   // inicializa estrutura do client
-  if (initializeClient(*client_socket, userid, &client) > 0)
+  if (initializeClient(*client_socket, user_id, &client) > 0)
   {
       // avisamos cliente que conseguiu conectar
       connected = 1;
@@ -286,7 +286,7 @@ void *client_thread (void *socket)
       if (byteCount < 0)
         printf("ERROR sending connected message\n");
 
-      printf("%s connected!\n", userid);
+      printf("%s connected!\n", user_id);
   }
   else
   {
@@ -299,27 +299,27 @@ void *client_thread (void *socket)
     return NULL;
   }
 
-  listen_client(*client_socket, userid);
+  listen_client(*client_socket, user_id);
 }
 
 void *sync_thread_sv(void *socket)
 {
   int byteCount, connected;
   int *client_socket = (int*)socket;
-  char userid[MAXNAME];
+  char user_id[MAXNAME];
   struct client client;
 
   // lê os dados de um cliente
-  byteCount = read(*client_socket, userid, MAXNAME);
+  byteCount = read(*client_socket, user_id, MAXNAME);
 
   // erro de leitura
   if (byteCount < 1)
     printf("ERROR reading from socket\n");
 
-  listen_sync(*client_socket, userid);
+  listen_sync(*client_socket, user_id);
 }
 
-void listen_client(int client_socket, char *userid)
+void listen_client(int client_socket, char *user_id)
 {
   int byteCount, command;
   struct client_request clientRequest;
@@ -333,23 +333,23 @@ void listen_client(int client_socket, char *userid)
 
       switch (clientRequest.command)
       {
-        case SHOWFILES: send_file_data(client_socket, userid); break;
-        case DOWNLOAD: send_file(clientRequest.file, client_socket, userid); break;
-        case UPLOAD: receive_file(clientRequest.file, client_socket, userid); break;
-        case EXIT: close_client_connection(client_socket, userid);break;
+        case SHOWFILES: send_file_data(client_socket, user_id); break;
+        case DOWNLOAD: send_file(clientRequest.file, client_socket, user_id); break;
+        case UPLOAD: receive_file(clientRequest.file, client_socket, user_id); break;
+        case EXIT: close_client_connection(client_socket, user_id);break;
   //      default: printf("ERROR invalid command\n");
       }
   } while(clientRequest.command != EXIT);
 }
 
-void send_file(char *file, int socket, char *userid)
+void send_file(char *file, int socket, char *user_id)
 {
     int byteCount, bytesLeft, fileSize;
 	FILE* ptrfile;
 	char dataBuffer[KBYTE], path[KBYTE];
 
   strcpy(path, "sync_dir_");
-  strcat(path, userid);
+  strcat(path, user_id);
   strcat(path, "/");
   strcat(path, file);
 
@@ -378,7 +378,7 @@ void send_file(char *file, int socket, char *userid)
   }
 
 }
-void receive_file(char *file, int socket, char*userid)
+void receive_file(char *file, int socket, char*user_id)
 {
   int byteCount, bytesLeft, fileSize;
   FILE* ptrfile;
@@ -387,7 +387,7 @@ void receive_file(char *file, int socket, char*userid)
   time_t now;
 
   strcpy(path, "sync_dir_");
-  strcat(path, userid);
+  strcat(path, user_id);
   strcat(path, "/");
   strcat(path, file);
 
@@ -405,7 +405,7 @@ void receive_file(char *file, int socket, char*userid)
         file_data.timestamp_last_modified = now;
         file_data.size = fileSize;
 
-      	updateFileInfo(userid, file_data);
+      	updateFileInfo(user_id, file_data);
         return;
       }
 
@@ -437,19 +437,19 @@ void receive_file(char *file, int socket, char*userid)
       file_data.timestamp_last_modified = now;
       file_data.size = fileSize;
 
-      updateFileInfo(userid, file_data);
+      updateFileInfo(user_id, file_data);
   }
 
 }
 
-void send_all_files(int client_socket, char *userid)
+void send_all_files(int client_socket, char *user_id)
 {
   int byteCount, bytesLeft, fileSize, fileNum=0, i;
   FILE* ptrfile;
   char dataBuffer[KBYTE], path[KBYTE];
   struct client_list *client_node;
 
-  if (findNode(userid, clients, &client_node))
+  if (find_node_list(user_id, clients, &client_node))
   {
     for(i = 0; i < MAXFILES; i++)
     {
@@ -464,7 +464,7 @@ void send_all_files(int client_socket, char *userid)
   {
     if (client_node->client.file_data[i].size != -1)
     {
-      strcpy(path, userid);
+      strcpy(path, user_id);
       strcat(path, "/");
       strcat(path, client_node->client.file_data[i].name);
 
@@ -495,13 +495,13 @@ void send_all_files(int client_socket, char *userid)
 
 }
 
-void send_file_data(int socket, char *userid)
+void send_file_data(int socket, char *user_id)
 {
     struct client_list *client_node;
 	struct client client;
 	int i, fileNum = 0;
 
-	if (findNode(userid, clients, &client_node))
+	if (find_node_list(user_id, clients, &client_node))
 	{
 		client = client_node->client;
 		for (i = 0; i < MAXFILES; i++)
@@ -520,12 +520,12 @@ void send_file_data(int socket, char *userid)
 	}
 
 }
-void update_file_data(char *userid, struct file_data file_data)
+void update_file_data(char *user_id, struct file_data file_data)
 {
     struct client_list *client_node;
     int i;
 
-    if (findNode(userid, clients, &client_node))
+    if (find_node_list(user_id, clients, &client_node))
     {
         for(i = 0; i < MAXFILES; i++)
         if(!strcmp(file_data.name, client_node->client.file_data[i].name))
@@ -544,7 +544,7 @@ void update_file_data(char *userid, struct file_data file_data)
     }
 }
 
-void delete_file_all_devices(char *file, int socket, char *userid)
+void delete_file_all_devices(char *file, int socket, char *user_id)
 {
   int byteCount;
   FILE *ptrfile;
@@ -552,7 +552,7 @@ void delete_file_all_devices(char *file, int socket, char *userid)
   struct file_data file_data;
   
   strcpy(path, "sync_dir_");
-  strcat(path, userid);
+  strcat(path, user_id);
   strcat(path, "/");
   strcat(path, file);
 
@@ -564,7 +564,7 @@ void delete_file_all_devices(char *file, int socket, char *userid)
   strcpy(file_data.name, file);
   file_data.size = -1;
 
-  updateFileInfo(userid, file_data);
+  updateFileInfo(user_id, file_data);
   return;
 }
 
