@@ -29,7 +29,7 @@ void main(int argc, char *argv[]) {
 	// terceiro argumento porta
 	port = atoi(argv[3]);
 
-	if ( open_connection_with_server((host, port)) > 0) {
+	if ( open_connection_with_server(host, port) > 0) {
 		sync_client_inicialization();
 		user_interface();
 	}
@@ -59,7 +59,7 @@ void user_interface() {
             case UPLOAD: 
                 upload_file(file_name, file_name,socket_fd);
                 break;
-			case LIST:
+			case SHOWFILES:
                 list_files();
                 break;
             case EXIT:
@@ -237,7 +237,7 @@ void sync_client_inicialization()
     // File name
 	strcat(file_name, user_id);
 	// Syncronization client directory path
-	strcpy(sync_client_directory, homedir); strcat(sync_client_directory, "/"); strcat(sync_client_directory, file_name);
+	strcpy(sync_client_directory, home_directory); strcat(sync_client_directory, "/"); strcat(sync_client_directory, file_name);
 
 	if (mkdir(sync_client_directory, 0777) < 0)
 		if (errno != EEXIST)
@@ -403,7 +403,7 @@ void upload_file(char *client_file_path, char *file_name, int socket) {
 	struct client_request client_request;
 
 	if(file = fopen(client_file_path, "rb")) {
-        client_request.file = file_name;
+        strcpy(client_request.file, file_name);
         client_request.command = UPLOAD;
 
         // Send file name and upload command

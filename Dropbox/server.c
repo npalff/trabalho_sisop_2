@@ -255,7 +255,7 @@ void listen_sync(int client_socket, char *userid)
       {
         case UPLOAD: receive_file(clientRequest.file, client_socket, userid); break;
         case DOWNLOAD_ALL: send_all_files(client_socket, userid); break;
-        case DELETE: delete_file(clientRequest.file, client_socket, userid);
+        case DELETE: delete_file_all_devices(clientRequest.file, client_socket, userid);
         case EXIT: ;break;
         default: break;
       }
@@ -544,7 +544,7 @@ void update_file_info(char *userid, struct file_data file_data)
     }
 }
 
-void delete_file(char *file, int socket, char *userid)
+void delete_file_all_devices(char *file, int socket, char *userid)
 {
   int byteCount;
   FILE *ptrfile;
