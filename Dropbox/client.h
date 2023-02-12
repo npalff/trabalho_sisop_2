@@ -30,8 +30,8 @@
 
 int create_sync_sock();
 void download_file(char *file); // void get_file(char *file)
-int open_connection_with_server(char *host, int port) //int connect_server (char *host, int port)
-void sync_client_inicialization() //void sync_client_first();
+int open_connection_with_server(char *host, int port); //int connect_server (char *host, int port)
+void sync_client_inicialization(); //void sync_client_first();
 void close_connection_with_server(); // void close_connection();
 void create_notifier_sync_client_directory(); // initializeNotifyDescription();
 void *sync_client_directory_thread(); // void *sync_thread();
