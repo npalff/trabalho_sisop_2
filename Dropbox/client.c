@@ -317,7 +317,7 @@ void list_files() {
     int number_files_server; // fileNum
     int file_index; // i
 	struct client_request client_request; // clientRequest
-	struct file_data file_info; // file_info
+	struct file_data file_data; // file_data
 
 	client_request.command = SHOWFILES;
 
@@ -337,9 +337,9 @@ void list_files() {
 	}
 
 	for(file_index = 0; file_index < number_files_server; file_index++) {
-		number_bytes = read(socket_fd, &file_info, sizeof(file_info));
+		number_bytes = read(socket_fd, &file_data, sizeof(file_data));
 
-		printf("\nFile %d: %s \nDate: %ssize: %d\n", file_index, file_info.name, file_info.last_modified, file_info.size);
+		printf("\nFile %d: %s \nDate: %ssize: %d\n", file_index, file_data.name, file_data.last_modified, file_data.size);
 	}
 }
 

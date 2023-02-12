@@ -193,7 +193,7 @@ void initialize_clients()
 
                  stat(path, &st);
 
-                 strcpy(client.file_info[i].name, userDirent->d_name);
+                 strcpy(client.file_data[i].name, userDirent->d_name);
 
                  client.file_data[i].size = st.st_size;
 
@@ -333,7 +333,7 @@ void listen_client(int client_socket, char *userid)
 
       switch (clientRequest.command)
       {
-        case SHOWFILES: send_file_info(client_socket, userid); break;
+        case SHOWFILES: send_file_data(client_socket, userid); break;
         case DOWNLOAD: send_file(clientRequest.file, client_socket, userid); break;
         case UPLOAD: receive_file(clientRequest.file, client_socket, userid); break;
         case EXIT: close_client_connection(client_socket, userid);break;
@@ -383,7 +383,7 @@ void receive_file(char *file, int socket, char*userid)
   int byteCount, bytesLeft, fileSize;
   FILE* ptrfile;
   char dataBuffer[KBYTE], path[200];
-  struct file_data file_info;
+  struct file_data file_data;
   time_t now;
 
   strcpy(path, "sync_dir_");
@@ -400,12 +400,12 @@ void receive_file(char *file, int socket, char*userid)
       {
         fclose(ptrfile);
 
-      	strcpy(file_info.name, file);
-        strcpy(file_info.last_modified, ctime(&now));
-        file_info.timestamp_last_modified = now;
-        file_info.size = fileSize;
+      	strcpy(file_data.name, file);
+        strcpy(file_data.last_modified, ctime(&now));
+        file_data.timestamp_last_modified = now;
+        file_data.size = fileSize;
 
-      	updateFileInfo(userid, file_info);
+      	updateFileInfo(userid, file_data);
         return;
       }
 
@@ -432,12 +432,12 @@ void receive_file(char *file, int socket, char*userid)
 
       time (&now);
 
-      strcpy(file_info.name, file);
-      strcpy(file_info.last_modified, ctime(&now));
-      file_info.timestamp_last_modified = now;
-      file_info.size = fileSize;
+      strcpy(file_data.name, file);
+      strcpy(file_data.last_modified, ctime(&now));
+      file_data.timestamp_last_modified = now;
+      file_data.size = fileSize;
 
-      updateFileInfo(userid, file_info);
+      updateFileInfo(userid, file_data);
   }
 
 }
@@ -495,7 +495,7 @@ void send_all_files(int client_socket, char *userid)
 
 }
 
-void send_file_info(int socket, char *userid)
+void send_file_data(int socket, char *userid)
 {
     struct client_list *client_node;
 	struct client client;
@@ -520,7 +520,7 @@ void send_file_info(int socket, char *userid)
 	}
 
 }
-void update_file_info(char *userid, struct file_data file_data)
+void update_file_data(char *userid, struct file_data file_data)
 {
     struct client_list *client_node;
     int i;
@@ -528,16 +528,16 @@ void update_file_info(char *userid, struct file_data file_data)
     if (findNode(userid, clients, &client_node))
     {
         for(i = 0; i < MAXFILES; i++)
-        if(!strcmp(file_info.name, client_node->client.file_data[i].name))
+        if(!strcmp(file_data.name, client_node->client.file_data[i].name))
             {
-            client_node->client.file_data[i] = file_info;
+            client_node->client.file_data[i] = file_data;
             return;
             }
         for(i = 0; i < MAXFILES; i++)
         {
         if(client_node->client.file_data[i].size == -1)
         {
-            client_node->client.file_data[i] = file_info;
+            client_node->client.file_data[i] = file_data;
             break;
         }
         }
@@ -549,7 +549,7 @@ void delete_file_all_devices(char *file, int socket, char *userid)
   int byteCount;
   FILE *ptrfile;
   char path[200];
-  struct file_data file_info;
+  struct file_data file_data;
   
   strcpy(path, "sync_dir_");
   strcat(path, userid);
@@ -561,10 +561,10 @@ void delete_file_all_devices(char *file, int socket, char *userid)
     printf("Error: unable to delete the %s file\n", file);
   }
 
-  strcpy(file_info.name, file);
-  file_info.size = -1;
+  strcpy(file_data.name, file);
+  file_data.size = -1;
 
-  updateFileInfo(userid, file_info);
+  updateFileInfo(userid, file_data);
   return;
 }
 

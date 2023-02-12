@@ -29,7 +29,7 @@ struct file_data
     time_t timestamp_last_modified;
     int size;
     pthread_mutex_t file_mutex;
-}file_info;
+};
 
 struct client
 {
@@ -69,8 +69,8 @@ void send_file(char *file, int socket, char *userid);
 void receive_file(char *file, int socket, char*userid);
 
 void send_all_files(int client_socket, char *userid);
-void send_file_info(int socket, char *userid);
-void update_file_info(char *userid, struct file_data file_data);
+void send_file_data(int socket, char *userid);
+void update_file_data(char *userid, struct file_data file_data);
 
 void delete_file_all_devices(char *file, int socket, char *userid);
 
