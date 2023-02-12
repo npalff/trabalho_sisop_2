@@ -7,7 +7,7 @@ char sync_client_directory[MAXNAME + 50]; // directory
 char *host; //host
 
 int port; //port
-int socket_fd = -1;//sockfd
+int socket_fd = -1;//socket_fd
 int sync_socket = -1;//sync_socket
 int notifier;//notifyfd
 int watch;//watchfd
@@ -208,13 +208,13 @@ void *sync_client_directory_thread() {
                 strcpy(client_file_path, sync_client_directory); strcat(client_file_path, "/"); strcat(client_file_path, event->name);
 
                 if(event->mask & IN_CLOSE_WRITE || event->mask & IN_CREATE || event->mask & IN_MOVED_TO) {
-					if(exists(path) && (event->name[0] != '.'))
+					if(exists(client_file_path) && (event->name[0] != '.'))
 					    upload_file(client_file_path, file_name, sync_socket);
                 }
 
                 if (event->mask & IN_DELETE || event->mask & IN_MOVED_FROM){
 					if(event->name[0] != '.')
-					    delete_file(file_name, sync_socket);
+					    delete_file(file_name, sync_socket, user_id);
 				}
             }
             notify_reading += EVENT_SIZE + event->len;
@@ -231,7 +231,7 @@ void sync_client_inicialization()
     char file_name[MAXNAME + 10] = "sync_dir_"; // fileName
 	char *home_directory; // homedir
 
-	if ((homedir = getenv("HOME")) == NULL)
+	if ((home_directory = getenv("HOME")) == NULL)
         home_directory = getpwuid(getuid())->pw_dir;
 	
     // File name
@@ -317,14 +317,14 @@ void list_files() {
     int number_files_server; // fileNum
     int file_index; // i
 	struct client_request client_request; // clientRequest
-	struct file_info file_info; // file_info
+	struct file_data file_info; // file_info
 
-	client_request.command = LIST;
+	client_request.command = SHOWFILES;
 
 	// avisa servidor que será feito um download
 	number_bytes = write(socket_fd, &client_request, sizeof(client_request));
 	if(number_bytes < 0)
-		printf("Error sending LIST message to server\n");
+		printf("Error sending SHOWFILES message to server\n");
 
 	// lê número de arquivos existentes no diretório
 	number_bytes = read(socket_fd, &number_files_server, sizeof(number_files_server));
@@ -357,12 +357,12 @@ void download_file(char *file_name) {
 	client_request.command = DOWNLOAD;
 
 	// avisa servidor que será feito um download
-	number_bytes = write(sockfd, &client_request, sizeof(client_request));
+	number_bytes = write(socket_fd, &client_request, sizeof(client_request));
 	if (number_bytes < 0)
 		printf("ERROR: Download message to server\n");
 
 	// lê estrutura do arquivo que será lido do servidor
-	number_bytes = read(sockfd, &file_size, sizeof(file_size));
+	number_bytes = read(socket_fd, &file_size, sizeof(file_size));
 	if (number_bytes < 0)
 		printf("ERROR: Receiving file_size\n");
 
@@ -378,25 +378,25 @@ void download_file(char *file_name) {
 
 	while(number_missing_bytes_read > 0) {
 		// lê 1kbyte de dados do arquivo do servidor
-		number_bytes = read(sockfd, dataBuffer, KBYTE);
+		number_bytes = read(socket_fd, buffer, KBYTE);
 
 		// escreve no arquivo do cliente os bytes lidos do servidor
 		if(number_missing_bytes_read > KBYTE) {
-			number_bytes = fwrite(dataBuffer, KBYTE, 1, file_name);
+			number_bytes = fwrite(buffer, KBYTE, 1, file_name);
 		} else {
-			fwrite(dataBuffer, number_missing_bytes_read, 1, file_name);
+			fwrite(buffer, number_missing_bytes_read, 1, file_name);
 		}
 		// decrementa os bytes lidos
 		number_missing_bytes_read -= KBYTE;
 	}
 
-	fclose(file_name);
+	fclose(file);
 	printf("File %s has been downloaded\n\n", file_name);
 }
 
 void upload_file(char *client_file_path, char *file_name, int socket) {
     FILE* file;
-    int file_size = 0;
+    int f_size = 0;
 	int number_bytes_writed = 1;
 	char buffer[KBYTE];
 
@@ -410,11 +410,11 @@ void upload_file(char *client_file_path, char *file_name, int socket) {
         write(socket, &client_request, sizeof(client_request));
         
         // Send file size
-        file_size = file_size(file);
-        write(socket, &file_size, sizeof(file_size));
+        f_size = file_size(file);
+        write(socket, &f_size, sizeof(f_size));
 
         // Send file data
-        if(file_size > 0) {
+        if(f_size > 0) {
             while(!feof(file) && number_bytes_writed >= 0) {
                 fread(buffer, sizeof(buffer), 1, file);
                 number_bytes_writed = write(socket, buffer, KBYTE);
@@ -438,7 +438,7 @@ void delete_file(char* file_name, int socket) {
 	int number_bytes_writed;
 	struct client_request client_request;
 
-	client_request.file = file_name;
+	strcpy(client_request.file, file_name);
 	client_request.command = DELETE;
 
 	number_bytes_writed = write(socket, &client_request, sizeof(client_request));
