@@ -14,14 +14,15 @@
 
 #define UPLOAD 0
 #define DOWNLOAD 1
-#define DOWNLOAD_ALL 2
-#define DELETE 3
-#define SHOWFILES 4
-#define SYNC 5
-#define EXIT 6
+#define DOWNLOAD_ALL 5
+#define DELETE 6
+#define SHOWFILES 2
+#define SYNC 3
+#define EXIT 4
 #define KBYTE 1024
 #define LINE 5
 #define COLUMN 13
+
 
 void create_list(struct client_list *client_list);
 void insert_list(struct client_list **client_list, struct client client);

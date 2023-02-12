@@ -90,8 +90,8 @@ int request_command(char *request, char *file) {
 		else if (!strcmp(aux_request, command[UPLOAD]))
                 return UPLOAD;
 	}
-	else
-		return -1;
+	
+	return -1;
 }
 
 void file_name(char *path_name, char *fname) {
@@ -121,7 +121,7 @@ time_t last_modified_date(char *path) {
 int exist(const char *fname) {
     FILE *file;
 
-    if (file = fopen(fname, "rb")) {
+    if ((file = fopen(fname, "rb"))) {
         fclose(file);
         return 1;
     }
