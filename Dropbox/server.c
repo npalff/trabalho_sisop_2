@@ -9,11 +9,7 @@ int writing = 0;
 
 int main(int argc, char* argv[])
 {
-    //if(argc > 2)
-    //{
-    //    printf("Error: wrong call \n\n To run the server, call: ./server <port number>");
-    //}
-    //else
+
         PORT = atoi(argv[1]);
     
     int server_socket, new_socket, thread;
@@ -299,7 +295,7 @@ void *client_thread (void *socket)
     return NULL;
   }
 
-  listen_client(client_socket, user_id);
+  listen_client(*client_socket, user_id);
 }
 
 

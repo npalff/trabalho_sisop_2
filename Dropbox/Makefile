@@ -3,7 +3,7 @@
 dropbox: ui client server
 
 ui: UI.c
-	gcc  -c UI.c && mv ui.o ./bin
+	gcc  -c UI.c && mv UI.o ./bin
 
 client: client.c
 	gcc -o client_dropbox client.c ./bin/ui.o -pthread
