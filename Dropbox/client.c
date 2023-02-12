@@ -214,7 +214,7 @@ void *sync_client_directory_thread() {
 
                 if (event->mask & IN_DELETE || event->mask & IN_MOVED_FROM){
 					if(event->name[0] != '.')
-					    delete_file(file_name, sync_socket, user_id);
+					    delete_file(file_name, sync_socket);
 				}
             }
             notify_reading += EVENT_SIZE + event->len;
