@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     int server_socket, new_socket, thread;
     socklen_t client_len;
     struct sockaddr_in serv_addr, cli_addr;
-    pthread_t client_thread, sync_thread;
+    pthread_t c_thread, sync_thread;
 
     // inicializa lista de clientes do servidor
     create_list(clients);
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         if (thread)
         {
         // cria thread para atender o cliente
-        if(pthread_create(&client_thread, NULL, client_thread, &new_socket))
+        if(pthread_create(&c_thread, NULL, client_thread, &new_socket))
         {
             printf("ERROR creating thread\n");
             return -1;
