@@ -3,7 +3,7 @@
 
 
 int PORT;
-struct client_list *client_list;
+struct client_list *client_list = NULL;;
 int writing = 0;
 
 int main(int argc, char* argv[])

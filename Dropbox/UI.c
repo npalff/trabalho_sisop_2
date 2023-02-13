@@ -3,10 +3,6 @@
 
 char command[LINE][COLUMN] = {"upload", "download", "list", "get_sync_dir", "exit"};
 
-void create_list(struct client_list *client_list) {
-	client_list = NULL;
-}
-
 void insert_list(struct client_list **client_list, struct client client) {
 	struct client_list *node;
 	struct client_list *list_aux = *client_list;
