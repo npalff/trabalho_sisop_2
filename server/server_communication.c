@@ -1,7 +1,5 @@
-#ifndef COMMUNICATION_SERVER
-#define COMMUNICATION_SERVER
-#include "server.h"
-#include "../tools/tools.h"
+
+#include "server_communication.h";
 
 int initialize_client(int client_socket, char *user_id, struct client *client)
 {
@@ -159,4 +157,3 @@ void close_client_connection(int socket, char *user_id)
       client_node->client.devices[1] = FREEDEV;
   }
 }
-#endif

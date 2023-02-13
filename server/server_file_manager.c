@@ -1,6 +1,4 @@
-#ifndef FILE_MANAGER_SERVER
-#define FILE_MANAGER_SERVER
-
+#include "server_file_manager.h";
 
 void send_file(char *file, int socket, char *user_id)
 {
@@ -229,6 +227,3 @@ void delete_file_all_devices(char *file, int socket, char *user_id)
 
   update_file_data(user_id, file_data);
 }
-
-
-#endif

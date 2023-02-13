@@ -21,6 +21,10 @@
 #define MAXFILES 30
 #define FREEDEV -1
 
+int PORT;
+struct client_list *client_list = NULL;;
+int writing = 0;
+
 struct file_data
 {
     char name[MAXNAME];

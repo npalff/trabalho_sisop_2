@@ -1,9 +1,9 @@
 #ifndef SYNCRONIZATION_SERVER
 #define SYNCRONIZATION_SERVER
 
+#include "server.h";
+#include "../tools/tools.h";
 
-
-void sync_server(int socket, char *userid);
 void listen_sync(int client_socket, char *userid);
 
 
