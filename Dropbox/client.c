@@ -42,8 +42,10 @@ void user_interface() {
     char file_name[200]; // file
 	int command = 0;
 
-	printf("\nCommands:\nupload <path/filename.ext>\ndownload <filename.ext>\nlist\nget_sync_dir\nexit\n");
+//delete_file(event->name, sync_socket);
+
 	do {
+	    printf("\n\nComandos possíveis:\nupload <path>/<filename> -- upload file to server\ndelete <filename> -- delete file from server\ndownload <filename>\nlist -- lista arquivos do diretorio\nget_sync_dir -- Sincronizar o diretório manualmente\nexit -- Encerra a conexao com o servidor\n");
 		printf("\ntype your command: ");
 		fgets(request, sizeof(request), stdin);
 		command = request_command(request, file_name);
@@ -58,6 +60,8 @@ void user_interface() {
                 break;
             case UPLOAD: 
                 upload_file(file_name, file_name,socket_fd);
+                //sleep(5);
+                //download_files();
                 break;
 			case SHOWFILES:
                 list_files();
@@ -65,6 +69,10 @@ void user_interface() {
             case EXIT:
                 close_connection_with_server();
                 break;
+            case DELETE:
+                delete_file(file_name);
+                break;
+
 
 			default: printf("ERROR: Invalid command\n");
 		}
@@ -336,10 +344,10 @@ void list_files() {
 		return;
 	}
 
+    printf("File\t\tName\t\tLast Modified\t\tSize\n");
 	for(file_index = 0; file_index < number_files_server; file_index++) {
 		number_bytes = read(socket_fd, &file_data, sizeof(file_data));
-
-		printf("\nFile %d: %s \nDate: %ssize: %d\n", file_index, file_data.name, file_data.last_modified, file_data.size);
+		printf("%d\t\t%s\t\t%s\t\t%d bytes\n", file_index, file_data.name, file_data.last_modified, file_data.size);
 	}
 }
 

@@ -20,7 +20,7 @@
 #define SYNC 3
 #define EXIT 4
 #define KBYTE 1024
-#define LINE 5
+#define LINE 7
 #define COLUMN 13
 
 

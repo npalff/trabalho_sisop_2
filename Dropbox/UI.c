@@ -1,7 +1,7 @@
 
 #include "UI.h"
 
-char command[LINE][COLUMN] = {"upload", "download", "list", "get_sync_dir", "exit"};
+char command[LINE][COLUMN] = {"upload", "download", "list", "get_sync_dir", "exit", "", "delete"};
 
 void insert_list(struct client_list **client_list, struct client client) {
 	struct client_list *node;
@@ -69,6 +69,8 @@ int request_command(char *request, char *file) {
 
     else if (!strcmp(request, command[EXIT]))
 		return EXIT;
+	else if (!strcmp(request, command[DELETE]))
+        return DELETE;
 
 	aux_request = strtok(request, " ");
 	aux_file = strtok(NULL, "\n");
