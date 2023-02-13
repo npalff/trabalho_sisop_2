@@ -9,24 +9,13 @@
 #ifndef COMMUNICATION_CLIENT
 #define COMMUNICATION_CLIENT
 
-typedef struct __packet {
-    uint16_t type;          //Tipo do pacote (p.ex. DATA | CMD)
-    uint16_t seqn;          //Número de sequência
-    uint16_t length;        //Comprimento do payload 
-    time_t timestamp;       // Timestamp do dado
-    char* _payload;         //Dados da mensagem
-} packet;
+int open_connection_with_server(char *host, int port); //int connect_server (char *host, int port)
+void close_connection_with_server(); // void close_connection();
 
-typedef struct __client_thread_args {
-    int sockfd;                 // Socket de comunicação
-} client_thread_args;
-
-// metodos comuns a servidor e cliente
-int receive_packet(int socketID, packet* pack, char *buffer); // 
-int send_packet(int socketID, packet* pack);
-
-
-// metodos do cliente
-int connect_to_server (int socketID, char* port_number)
+void download_files(); // void get_all_files();
+void download_file(char *file); // void get_file(char *file)
+void upload_file(char *client_file_path, char *file_name, int socket); // void upload_file(char *file, int socket);
+void delete_file(char *file_name, int socket); // void delete_file_request(char* file, int socket);
+void list_files(); //void show_files()
 
 #endif
