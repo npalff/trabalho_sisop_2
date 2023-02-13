@@ -64,8 +64,6 @@ int initialize_client(int client_socket, char *user_id, struct client *client)
 }
 
 
-
-
 void initialize_clients()
 {
   struct client client;
