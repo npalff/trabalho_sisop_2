@@ -60,16 +60,12 @@ int request_command(char *request, char *file) {
 
 	if ((strLen > 0) && (request[strLen-1] == '\n'))
 		  request[strLen-1] = '\0';
-
 	if (!strcmp(request, command[SHOWFILES]))
 		return SHOWFILES;
-
 	if (!strcmp(request, command[SYNC]))
 		return SYNC;
     if (!strcmp(request, command[EXIT]))
 		return EXIT;
-	if (!strcmp(request, command[DELETE]))
-        return DELETE;
 
 	aux_request = strtok(request, " ");
 	aux_file = strtok(NULL, "\n");
@@ -84,8 +80,10 @@ int request_command(char *request, char *file) {
 		if (!strcmp(aux_request, command[DOWNLOAD]))
 			return DOWNLOAD;
 
-		else if (!strcmp(aux_request, command[UPLOAD]))
+		if (!strcmp(aux_request, command[UPLOAD]))
                 return UPLOAD;
+        if (!strcmp(request, command[DELETE]))
+                return DELETE;
 	}
 	
 	return -1;

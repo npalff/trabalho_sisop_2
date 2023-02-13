@@ -344,10 +344,10 @@ void list_files() {
 		return;
 	}
 
-    printf("File\t\t\tName\t\t\tLast Modified\t\t\tSize\n");
+    printf("File\ttName\t\t\t\tLast Modified\t\t\tSize\n");
 	for(file_index = 0; file_index < number_files_server; file_index++) {
 		number_bytes = read(socket_fd, &file_data, sizeof(file_data));
-		printf("%d\t\t\t%s\t\t\t%s\t\t\t%dbytes\n", file_index, file_data.name, file_data.last_modified, file_data.size);
+		printf("%d\t%s\t\t\t\t%s\t\t\t%dbytes\n", file_index, file_data.name, file_data.last_modified, file_data.size);
 	}
 }
 
