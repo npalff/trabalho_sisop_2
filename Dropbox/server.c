@@ -15,9 +15,6 @@ int main(int argc, char* argv[])
   struct sockaddr_in serv_addr, cli_addr;
   pthread_t clientThread, syncThread;
 
-  // inicializa lista
-  create_list(client_list);
-
   initialize_clients();
 
   // abre o socket
@@ -38,6 +35,8 @@ int main(int argc, char* argv[])
       printf("ERROR on bindining\n");
       return -1;
     }
+
+    printf("\nServer online! Waiting for connection.\n");
   // espera pela tentativa de conexão de algum cliente
   listen(serverSockfd, 5);
 
@@ -228,6 +227,7 @@ void listen_client(int client_socket, char *user_id)
         case DOWNLOAD: send_file(clientRequest.file, client_socket, user_id); break;
         case UPLOAD: receive_file(clientRequest.file, client_socket, user_id); break;
         case EXIT: close_client_connection(client_socket, user_id);break;
+        case DELETE: delete_file_all_devices(clientRequest.file, client_socket, user_id);break;
   //      default: printf("ERROR invalid command\n");
       }
   } while(clientRequest.command != EXIT);

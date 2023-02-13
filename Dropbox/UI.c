@@ -64,12 +64,11 @@ int request_command(char *request, char *file) {
 	if (!strcmp(request, command[SHOWFILES]))
 		return SHOWFILES;
 
-	else if (!strcmp(request, command[SYNC]))
+	if (!strcmp(request, command[SYNC]))
 		return SYNC;
-
-    else if (!strcmp(request, command[EXIT]))
+    if (!strcmp(request, command[EXIT]))
 		return EXIT;
-	else if (!strcmp(request, command[DELETE]))
+	if (!strcmp(request, command[DELETE]))
         return DELETE;
 
 	aux_request = strtok(request, " ");
