@@ -10,3 +10,6 @@ client: client.c
 
 server: server.c
 	gcc -o server_dropbox server.c ./bin/UI.o -pthread
+
+clean:
+	rm ./bin/UI.o client_dropbox server_dropbox
