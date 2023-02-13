@@ -70,7 +70,7 @@ void user_interface() {
                 close_connection_with_server();
                 break;
             case DELETE:
-                delete_file(file_name);
+                delete_file(file_name, socket_fd);
                 break;
 
 
