@@ -19,10 +19,10 @@ sv_sync: ./server/server_syncronization.c
 
 
 cl_comm: ./client/communication.c
-	gcc -c ./client/client_communication.c && mv client_communication.o ./client
+	gcc -c ./client/communication.c && mv communication.o ./client
 
 cl_sync: ./client/client_syncronization.c
-	gcc -c ./client/client_syncronization.c && mv client_syncronization.o ./client
+	gcc -c ./client/syncronization.c && mv syncronization.o ./client
 
 cl_inte: ./client/interface.c
 	gcc -c ./client/interface.c && mv interface.o ./client
@@ -30,7 +30,7 @@ cl_inte: ./client/interface.c
 
 
 client: ./client/client.c
-	gcc -o client_dropbox ./client/client.c ./tools/tools.o ./client/client_communication.o ./client/client_syncronization.o ./client/client_interface.o -pthread
+	gcc -o client_dropbox ./client/client.c ./tools/tools.o ./client/communication.o ./client/syncronization.o ./client/interface.o -pthread
 
 server: ./server/server.c
 	gcc -o server_dropbox ./server/server.c ./tools/tools.o ./server/server_communication.o ./server/server_file_manager.o ./server/server_syncronization.o -pthread
