@@ -1,4 +1,4 @@
-#include "server_file_manager.h";
+#include "server_file_manager.h"
 
 void send_file(char *file, int socket, char *user_id)
 {

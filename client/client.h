@@ -26,10 +26,10 @@
 #define CMD 2
 #define BUFFER_SIZE 256
 
-#include "client.h";
-#include "client_communication.h";
-#include "client_syncronization.h";
-#include "../tools/tools.h";
+#include "client.h"
+#include "client_communication.h"
+#include "client_syncronization.h"
+#include "../tools/tools.h"
 
 // Contants
 #define EVENT_SIZE ( sizeof (struct inotify_event) )

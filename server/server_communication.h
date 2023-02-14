@@ -1,8 +1,8 @@
 #ifndef COMMUNICATION_SERVER
 #define COMMUNICATION_SERVER
 
-#include "server.h";
-#include "../tools/tools.h";
+#include "server.h"
+#include "../tools/tools.h"
 
 
 int initialize_client(int client_socket, char *userid, struct client *client);
