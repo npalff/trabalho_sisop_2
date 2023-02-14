@@ -17,13 +17,11 @@ int main(int argc, char* argv[])
 
   initialize_clients();
 
-  // abre o socket
   if ((serverSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     printf("ERROR opening socket\n");
     return -1;
   }
-  // inicializa estrutura
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(PORT);
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -37,14 +35,12 @@ int main(int argc, char* argv[])
     }
 
     printf("\nServer online! Waiting for connection.\n");
-  // espera conexao de cliente
   listen(serverSockfd, 5);
 
   cliLen = sizeof(struct sockaddr_in);
 
   while(1)
   {
-    // socket para atender requisição do cliente
     if((newsockfd = accept(serverSockfd, (struct sockaddr *)&cli_addr, &cliLen)) == -1)
     {
       printf("ERROR on accept\n");
@@ -55,7 +51,6 @@ int main(int argc, char* argv[])
 
     if (thread)
     {
-      // cria thread para atender o cliente
       if(pthread_create(&clientThread, NULL, client_thread, &newsockfd))
       {
         printf("ERROR creating thread\n");
@@ -79,7 +74,6 @@ int initialize_client(int client_socket, char *user_id, struct client *client)
   struct stat sb;
   int i;
 
-  // não encontrou na lista ---- NEW CLIENT
   if (!find_node_list(user_id, client_list, &client_node))
   {
     client->devices[0] = client_socket;
@@ -91,11 +85,8 @@ int initialize_client(int client_socket, char *user_id, struct client *client)
       client->file_data[i].size = -1;
     }
     client->logged = 1;
-
-    // insere cliente na lista de client
     insert_list(&client_list, *client);
   }
-  // encontrou CLIENT na lista, atualiza device
   else
   {
     if(client_node->client.devices[0] == FREEDEV)
@@ -106,24 +97,20 @@ int initialize_client(int client_socket, char *user_id, struct client *client)
     {
       client_node->client.devices[1] = client_socket;
     }
-    // caso em que cliente já está conectado em 2 dipostivos
     else
       return -1;
   }
 
   if (stat(user_id, &sb) == 0 && S_ISDIR(sb.st_mode))
   {
-    // usuário já tem o diretório com o seu nome
   }
   else
   {
     if (mkdir(user_id, 0777) < 0)
     {
-      // erro
       if (errno != EEXIST)
         printf("ERROR creating directory\n");
     }
-    // diretório não existe
     else
     {
       printf("Creating %s directory...\n", user_id);
@@ -140,10 +127,8 @@ void *sync_thread_server(void *socket)
   char user_id[MAXNAME];
   struct client client;
 
-  // lê os dados de um cliente
   byteCount = read(*client_socket, user_id, MAXNAME);
 
-  // erro de leitura
   if (byteCount < 1)
     printf("ERROR reading from socket\n");
 
@@ -177,17 +162,13 @@ void *client_thread (void *socket)
   char user_id[MAXNAME];
   struct client client;
 
-  // lê os dados de um cliente
   byteCount = read(*client_socket, user_id, MAXNAME);
 
-  // erro de leitura
   if (byteCount < 1)
     printf("ERROR reading from socket\n");
 
-  // inicializa estrutura do client
   if (initialize_client(*client_socket, user_id, &client) > 0)
   {
-      // avisamos cliente que conseguiu conectar
       connected = 1;
       byteCount = write(*client_socket, &connected, sizeof(int));
       if (byteCount < 0)
@@ -197,7 +178,6 @@ void *client_thread (void *socket)
   }
   else
   {
-    // avisa cliente que não conseguimos conectar
     connected = 0;
     byteCount = write(*client_socket, &connected, sizeof(int));
     if (byteCount < 0)
@@ -228,7 +208,6 @@ void listen_client(int client_socket, char *user_id)
         case UPLOAD: receive_file(clientRequest.file, client_socket, user_id); break;
         case EXIT: close_client_connection(client_socket, user_id);break;
         case DELETE: delete_file_all_devices(clientRequest.file, client_socket, user_id);break;
-  //      default: printf("ERROR invalid command\n");
       }
   } while(clientRequest.command != EXIT);
 }
@@ -320,7 +299,6 @@ void receive_file(char *file, int socket, char*user_id)
 
   if (ptrfile = fopen(path, "wb"))
   {
-      // escreve número de bytes do arquivo
       byteCount = read(socket, &fileSize, sizeof(fileSize));
 
       if (fileSize == 0)
@@ -340,10 +318,8 @@ void receive_file(char *file, int socket, char*user_id)
 
       while(bytesLeft > 0)
       {
-        	// lê 1kbyte de dados do arquivo do servidor
     		byteCount = read(socket, dataBuffer, KBYTE);
 
-    		// escreve no arquivo do cliente os bytes lidos do servidor
     		if(bytesLeft > KBYTE)
     		{
     			byteCount = fwrite(dataBuffer, KBYTE, 1, ptrfile);
@@ -352,7 +328,6 @@ void receive_file(char *file, int socket, char*user_id)
     		{
     			fwrite(dataBuffer, bytesLeft, 1, ptrfile);
     		}
-    		// decrementa os bytes lidos
     		bytesLeft -= KBYTE;
       }
       fclose(ptrfile);
@@ -423,8 +398,6 @@ void send_all_files(int client_socket, char *user_id)
       if (ptrfile = fopen(path, "rb"))
       {
           fileSize = file_size(ptrfile);
-
-          // escreve estrutura do arquivo no servidor
           byteCount = write(client_socket, &fileSize, sizeof(int));
 
           if (fileSize > 0)
@@ -458,7 +431,6 @@ void send_file(char *file, int socket, char *user_id)
   {
       fileSize = file_size(ptrfile);
 
-    	// escreve estrutura do arquivo no servidor
     	byteCount = write(socket, &fileSize, sizeof(int));
 
       while(!feof(ptrfile))
@@ -471,7 +443,6 @@ void send_file(char *file, int socket, char *user_id)
       }
       fclose(ptrfile);
   }
-  // arquivo não existe
   else
   {
     fileSize = -1;
