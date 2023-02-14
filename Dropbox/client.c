@@ -1,5 +1,5 @@
 #include "client.h"
-#include "UI.h"
+#include "tools.h"
 
 // Global variables
 char user_id[MAXNAME]; //userid

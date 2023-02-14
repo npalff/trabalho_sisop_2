@@ -1,5 +1,5 @@
 
-#include "UI.h"
+#include "tools.h"
 
 char command[LINE][COLUMN] = {"upload", "download", "list", "get_sync_dir", "exit", "", "delete"};
 
