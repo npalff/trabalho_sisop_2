@@ -8,13 +8,13 @@ tools: ./tools/tools.c
 
 
 sv_comm: ./server/server_communication.c
-	gcc -c ./server/server_communication.c && mv ./server/server_communication.o ./server
+	gcc -c ./server/server_communication.c && mv ./server/server_communication.o .
 
 sv_file: ./server/server_file_manager.c
-	gcc -c ./server/server_file_manager.c && mv ./server/server_file_manager.o ./server
+	gcc -c ./server/server_file_manager.c && mv ./server/server_file_manager.o .
 
 sv_sync: ./server/server_syncronization.c
-	gcc -c ./server/server_syncronization.c && mv ./server/server_syncronization.o ./server
+	gcc -c ./server/server_syncronization.c && mv ./server/server_syncronization.o .
 
 
 
