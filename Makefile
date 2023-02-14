@@ -8,24 +8,24 @@ tools: ./tools/tools.c
 
 
 sv_comm: ./server/server_communication.c
-	gcc -c ./server/server_communication.c && mv ./server/server_communication.o
+	gcc -c ./server/server_communication.c && mv ./server/server_communication.o ./server
 
 sv_file: ./server/server_file_manager.c
-	gcc -c ./server/server_file_manager.c && mv ./server/server_file_manager.o
+	gcc -c ./server/server_file_manager.c && mv ./server/server_file_manager.o ./server
 
 sv_sync: ./server/server_syncronization.c
-	gcc -c ./server/server_syncronization.c && mv ./server/server_syncronization.o
+	gcc -c ./server/server_syncronization.c && mv ./server/server_syncronization.o ./server
 
 
 
 cl_comm: ./client/communication.c
-	gcc -c ./client/client_communication.c && mv ./client/client_communication.o
+	gcc -c ./client/client_communication.c && mv ./client/client_communication.o ./client
 
 cl_sync: ./client/client_syncronization.c
-	gcc -c ./client/client_syncronization.c && mv ./client/client_syncronization.o
+	gcc -c ./client/client_syncronization.c && mv ./client/client_syncronization.o ./client
 
 cl_inte: ./client/interface.c
-	gcc -c ./client/interface.c && mv ./client/interface.o
+	gcc -c ./client/interface.c && mv ./client/interface.o ./client
 
 
 
