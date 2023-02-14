@@ -27,8 +27,8 @@
 #define BUFFER_SIZE 256
 
 #include "client.h"
-#include "client_communication.h"
-#include "client_syncronization.h"
+#include "communication.h"
+#include "syncronization.h"
 #include "../tools/tools.h"
 
 // Contants
