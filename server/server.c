@@ -1,10 +1,9 @@
 
 #include "server.h";
-#include "server_communication";
+#include "server_communication.h";
 #include "server_syncronization.h";
 #include "server_file_manager.h";
 #include "../tools/tools.h";
-
 
 int main(int argc, char* argv[])
 {

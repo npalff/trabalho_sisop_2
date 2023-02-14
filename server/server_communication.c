@@ -1,4 +1,3 @@
-
 #include "server_communication.h";
 
 int initialize_client(int client_socket, char *user_id, struct client *client)

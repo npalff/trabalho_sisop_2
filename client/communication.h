@@ -1,3 +1,6 @@
+#ifndef COMMUNICATION_CLIENT
+#define COMMUNICATION_CLIENT
+
 #include <stdint.h>
 #include <time.h>
 #include <stdbool.h>
@@ -5,9 +8,6 @@
 #define DATA 1
 #define CMD 2
 #define BUFFER_SIZE 256
-
-#ifndef COMMUNICATION_CLIENT
-#define COMMUNICATION_CLIENT
 
 int open_connection_with_server(char *host, int port);
 void close_connection_with_server();

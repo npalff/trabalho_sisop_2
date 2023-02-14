@@ -1,4 +1,3 @@
-
 #include "server_syncronization.h";
 
 void listen_sync(int client_socket, char *user_id)
