@@ -1,15 +1,15 @@
 
 
-dropbox: tools client server
+dropbox: tool client server
 
-tools: tools.c
-	gcc  -c tools.c && mv tools.o ./tools
+tool: tools.c
+	gcc  -c tools.c && mv tools.o ./bin
 
 client: client.c
-	gcc -o client_dropbox client.c ./tools/tools.o -pthread
+	gcc -o client_dropbox client.c ./bin/tools.o -pthread
 
 server: server.c
-	gcc -o server_dropbox server.c ./tools/tools.o -pthread
+	gcc -o server_dropbox server.c ./bin/tools.o -pthread
 
 clean:
-	rm ./tools/tools.o client_dropbox server_dropbox
+	rm ./bin/tools.o client_dropbox server_dropbox
