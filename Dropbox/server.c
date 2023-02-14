@@ -23,13 +23,13 @@ int main(int argc, char* argv[])
     printf("ERROR opening socket\n");
     return -1;
   }
-  // inicializa estrutura do serv_addr
+  // inicializa estrutura
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(PORT);
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   bzero(&(serv_addr.sin_zero), 8);
 
-  // associa o descritor do socket a estrutura
+  
   if (bind(serverSockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
       printf("ERROR on bindining\n");
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     }
 
     printf("\nServer online! Waiting for connection.\n");
-  // espera pela tentativa de conexão de algum cliente
+  // espera conexao de cliente
   listen(serverSockfd, 5);
 
   cliLen = sizeof(struct sockaddr_in);
