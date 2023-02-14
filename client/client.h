@@ -24,6 +24,7 @@
 
 #define DATA 1
 #define CMD 2
+#define MAXNAME 64
 #define BUFFER_SIZE 256
 
 #include "client.h"
