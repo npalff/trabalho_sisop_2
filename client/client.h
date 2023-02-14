@@ -1,27 +1,6 @@
 #ifndef CLIENT
 #define CLIENT
 
-// Libraries
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <errno.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/inotify.h>
-#include <pwd.h>
-#include <sys/inotify.h>
-#include <stdint.h>
-#include <stdbool.h>
-
 #define DATA 1
 #define CMD 2
 #define MAXNAME 64
