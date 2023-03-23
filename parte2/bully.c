@@ -106,7 +106,7 @@ int wait_for_answers() {
     return 0;
 }
 
-//Transmite uma mensagem de eleição para todos os processos com id maior
+//Transmite uma mensagem de eleiï¿½ï¿½o para todos os processos com id maior
 void broadcast_election() {
     message msg = {ELECTION, id, -1};
     for (int i = id + 1; i < num_processes; i++) {
@@ -114,19 +114,19 @@ void broadcast_election() {
     }
 }
 
-// Processar uma mensagem de eleição
+// Processar uma mensagem de eleiï¿½ï¿½o
 void process_election(message msg) {
     // Recebeu uma mensagem election de outro processo
     printf("Process %d received an ELECTION message from process %d.\n", my_id, msg.from);
 
-    // Verifica se o processo atual já realizou uma eleição
+    // Verifica se o processo atual jï¿½ realizou uma eleiï¿½ï¿½o
     if (!election_in_progress) {
-        // Inicia uma nova eleição
+        // Inicia uma nova eleiï¿½ï¿½o
         election_in_progress = true;
         printf("Process %d starts a new election.\n", my_id);
         send_election_msg();
     } else {
-        // Eleição já em andamento
+        // Eleiï¿½ï¿½o jï¿½ em andamento
         printf("Process %d is already in an election.\n", my_id);
     }
 
@@ -136,15 +136,15 @@ void process_election(message msg) {
         printf("Process %d sends an ANSWER message to process %d.\n", my_id, msg.from);
         send_answer_msg(msg.from);
     } else if (msg.from < my_id) {
-        // Se o id do remetente for menor, não responde e inicia sua própria eleição
+        // Se o id do remetente for menor, nï¿½o responde e inicia sua prï¿½pria eleiï¿½ï¿½o
         printf("Process %d received an ELECTION message from process %d with a lower id. Starting a new election...\n", my_id, msg.from);
         election_in_progress = true;
         send_election_msg();
     } else {
-        // Se o id do remetente for igual ao do processo atual, ele é o novo coordenador
+        // Se o id do remetente for igual ao do processo atual, ele ï¿½ o novo coordenador
         printf("Process %d has been elected as the new coordinator!\n", my_id);
         election_in_progress = false;
-        coordinator_id = my_id;
+        msg.coordinator_id = my_id;
         send_coordinator_msg();
     }
 }
@@ -153,9 +153,9 @@ void process_answer(message msg) {
     // Recebeu uma mensagem answer de outro processo
     printf("Process %d received an ANSWER message from process %d.\n", my_id, msg.from);
 
-    // Verifica se o processo atual está em uma eleição e se a mensagem é do coordenador atual
+    // Verifica se o processo atual estï¿½ em uma eleiï¿½ï¿½o e se a mensagem ï¿½ do coordenador atual
     if (election_in_progress && msg.from == coordinator_id) {
-        // Atualiza o tempo limite para a próxima mensagem do coordenador
+        // Atualiza o tempo limite para a prï¿½xima mensagem do coordenador
         coordinator_timeout_timer = time(NULL) + COORDINATOR_TIMEOUT;
     }
 
